@@ -20,6 +20,13 @@ if (!ANTHROPIC_API_KEY) {
 
 // 讀取 index.astro 文件
 const indexPath = path.join(__dirname, '../src/pages/index.astro');
+
+// 檢查文件是否存在
+if (!fs.existsSync(indexPath)) {
+  console.error(`❌ 錯誤: 找不到文件 ${indexPath}`);
+  process.exit(1);
+}
+
 let indexContent = fs.readFileSync(indexPath, 'utf-8');
 
 /**
@@ -222,13 +229,18 @@ function extractSection(text, ...keywords) {
  */
 async function main() {
   console.log(`🚀 開始生成 ${CONTENT_TYPE} 類型的 SEO 內容...`);
+  console.log(`📁 目標文件: ${indexPath}`);
+  console.log(`🔑 API Key 已設置: ${ANTHROPIC_API_KEY ? '是' : '否'}`);
   
   try {
     // 生成內容
+    console.log('📡 正在調用 Anthropic API...');
     const aiContent = await generateSEOContent(CONTENT_TYPE);
     console.log('✅ AI 內容生成成功');
+    console.log(`📝 生成內容長度: ${aiContent.length} 字符`);
     
     // 更新文件
+    console.log('📝 正在更新文件...');
     const updated = updateIndexFile(aiContent, CONTENT_TYPE);
     
     if (updated) {
@@ -240,6 +252,7 @@ async function main() {
     }
   } catch (error) {
     console.error('❌ 執行失敗:', error.message);
+    console.error('錯誤堆疊:', error.stack);
     process.exit(1);
   }
 }
