@@ -5,8 +5,13 @@
  * 使用 Anthropic Claude API 生成 SEO 優化的文案
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// 獲取當前文件目錄（ES 模組中 __dirname 的替代方案）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 讀取環境變數
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
