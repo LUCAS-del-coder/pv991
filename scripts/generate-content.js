@@ -23,6 +23,12 @@ if (!ANTHROPIC_API_KEY) {
   process.exit(1);
 }
 
+// 驗證 API Key 格式（Anthropic API Key 通常以 sk-ant- 開頭）
+if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+  console.warn('⚠️  警告: API Key 格式可能不正確（應以 sk-ant- 開頭）');
+  console.warn('請確認 API Key 是否正確設置');
+}
+
 // 讀取 index.astro 文件
 const indexPath = path.join(__dirname, '../src/pages/index.astro');
 
