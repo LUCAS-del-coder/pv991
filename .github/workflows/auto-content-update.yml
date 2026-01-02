@@ -1,0 +1,59 @@
+name: 自動內容更新
+
+on:
+  # 僅手動觸發
+  workflow_dispatch:
+    inputs:
+      content_type:
+        description: '更新類型'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - games
+          - promotions
+          - seo
+
+jobs:
+  update-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 設置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 安裝依賴
+        run: |
+          npm install
+          npm install gray-matter js-yaml
+      
+      - name: 執行內容生成腳本
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CONTENT_TYPE: ${{ github.event.inputs.content_type || 'all' }}
+        run: |
+          node scripts/generate-content.js
+      
+      - name: 提交變更
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 檢查是否有變更
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "🤖 自動更新內容 - $(date +'%Y-%m-%d %H:%M')"
+            git push
+            echo "✅ 內容已更新並推送"
+          else
+            echo "ℹ️ 沒有內容需要更新"
+          fi
+
