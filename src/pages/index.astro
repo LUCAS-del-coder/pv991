@@ -151,13 +151,13 @@ const schemaOrg = {
 <body>
   <!-- Header -->
   <header class="header">
+    <div class="logo">
+      <!-- 文字 logo (有圖片時隱藏) -->
+      <h1 style="display: none; font-size: inherit; font-weight: inherit; margin: 0;">PV<span>99</span></h1>
+      <!-- Logo 圖片 -->
+      <img src="/images/logo.png" alt="PV99 အွန်လိုင်းကာစီနို" class="logo-img">
+    </div>
     <div class="header-container">
-      <div class="logo">
-        <!-- 文字 logo (有圖片時隱藏) -->
-        <h1 style="display: none; font-size: inherit; font-weight: inherit; margin: 0;">PV<span>99</span></h1>
-        <!-- Logo 圖片 -->
-        <img src="/images/logo.png" alt="PV99 အွန်လိုင်းကာစီနို" class="logo-img">
-      </div>
       <nav class="header-buttons" aria-label="主要導航">
         <a href="#platforms" class="btn btn-light">ဝင်ရောက်ပါ</a>
         <a href="#register" class="btn btn-primary">စာရင်းသွင်းမယ်</a>
@@ -334,6 +334,9 @@ const schemaOrg = {
       position: sticky;
       top: 0;
       z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .header-container {
@@ -341,10 +344,10 @@ const schemaOrg = {
       margin: 0 auto;
       padding: 0 20px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       height: 100%;
-      position: relative;
+      flex: 1;
     }
 
     .logo {
@@ -353,10 +356,8 @@ const schemaOrg = {
       color: #fff;
       display: flex;
       align-items: center;
-      margin-left: -20px;
       padding-left: 20px;
-      position: absolute;
-      left: 0;
+      height: 100%;
     }
 
     .logo span { color: #ff3b5c; }
