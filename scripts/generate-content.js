@@ -13,9 +13,76 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// SEO 關鍵字列表（29個）
+const KEYWORDS = [
+  'shwe shan casino',
+  'lion boss casino',
+  'fishing casino - ငါးမုဆိုးတို့',
+  'shwe casino apk download old version',
+  'mwd777 myanmar online casino',
+  'shwe casino login',
+  'shwe casino game app',
+  'jdbyg best online casino in myanmar',
+  'shwe casino 2014',
+  'shwe casino game download ios',
+  'shwe casino 2014 apk',
+  'mighty fu casino - slots game downloadable content',
+  'shwe casino app link',
+  'gkk777 best online casino in myanmar',
+  'shwe casino game',
+  'www.shwe casino app',
+  'shwe casino game download',
+  'online casino myanmar',
+  'shwe casino download',
+  'golden7 casino',
+  'mighty fu casino - slots game',
+  'casino myanmar',
+  'mighty fu casino slots game',
+  'shwe casino app update',
+  'shwe casino apk download',
+  'shwe casino apk',
+  'fortune casino myanmar',
+  'shwe casino',
+  'shwe casino 2014 download'
+];
+
+/**
+ * 根據日期選擇 5 個關鍵字（確保每天選擇相同）
+ */
+function selectKeywordsForToday() {
+  const today = new Date();
+  const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  
+  // 使用日期作為種子，確保每天選擇相同的關鍵字
+  let seed = 0;
+  for (let i = 0; i < dateString.length; i++) {
+    seed += dateString.charCodeAt(i);
+  }
+  
+  // 簡單的偽隨機數生成器
+  const random = (seed) => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  
+  const selected = [];
+  const available = [...KEYWORDS];
+  let currentSeed = seed;
+  
+  // 選擇 5 個關鍵字
+  for (let i = 0; i < 5 && available.length > 0; i++) {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    const index = Math.floor(random(currentSeed) * available.length);
+    selected.push(available.splice(index, 1)[0]);
+  }
+  
+  return { selected, date: dateString };
+}
+
 // 讀取環境變數
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const CONTENT_TYPE = process.env.CONTENT_TYPE || 'all';
+const AUTO_DAILY = process.env.AUTO_DAILY === 'true';
 
 if (!ANTHROPIC_API_KEY) {
   console.error('❌ 錯誤: 未設置 ANTHROPIC_API_KEY 環境變數');
@@ -43,18 +110,24 @@ let indexContent = fs.readFileSync(indexPath, 'utf-8');
 /**
  * 使用 Anthropic API 生成 SEO 內容
  */
-async function generateSEOContent(contentType) {
+async function generateSEOContent(contentType, keywords = null) {
+  // 如果是每日自動更新，使用選中的關鍵字
+  let keywordText = '';
+  if (keywords && keywords.length > 0) {
+    keywordText = `\n\n重點關鍵字（必須自然融入內容中）：\n${keywords.map((k, i) => `${i + 1}. ${k}`).join('\n')}\n\n要求：\n- 必須自然地將這些關鍵字融入內容中\n- 每個關鍵字至少出現一次\n- 保持內容自然流暢，不要堆砌關鍵字`;
+  }
+  
   const messages = {
-    all: `請為一個緬甸語的線上賭場網站生成 SEO 優化的文案。網站名稱是 PV99，提供多個線上賭場平台（Yes8, Ygn9, Pya777, Mmk99, Kbz999, Mmk123, Mmk8）和熱門遊戲（Rich Mahjong, Super Ace, Fortune Gems, Sweet Bonanza 等）。
+    all: `請為一個緬甸語的線上賭場網站生成 SEO 優化的文案。網站名稱是 PV99，提供多個線上賭場平台（Yes8, Ygn9, Pya777, Mmk99, Kbz999, Mmk123, Mmk8）和熱門遊戲（Rich Mahjong, Super Ace, Fortune Gems, Sweet Bonanza 等）。${keywordText}
 
 請生成以下內容（使用緬甸語）：
-1. 主標題和描述段落（約 150-200 字）
-2. 線上賭場遊戲介紹段落（約 100-150 字）
-3. 安全支付方式介紹段落（約 100-150 字）
+1. 主標題和描述段落（約 200-300 字）
+2. 線上賭場遊戲介紹段落（約 150-200 字）
+3. 安全支付方式介紹段落（約 150-200 字）
 
 要求：
 - 自然流暢的緬甸語
-- 包含關鍵字：線上賭場、PV99、Yes8、Ygn9、Pya777、Mmk99、slot games、online casino
+- 包含關鍵字：線上賭場、PV99、Yes8、Ygn9、Pya777、Mmk99、slot games、online casino${keywords ? '，以及上述重點關鍵字' : ''}
 - SEO 優化，但保持可讀性
 - 突出安全、可靠、多樣化遊戲選擇等優勢
 
