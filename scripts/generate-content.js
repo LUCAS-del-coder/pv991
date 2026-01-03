@@ -345,11 +345,21 @@ async function main() {
   console.log(`🚀 開始生成 ${CONTENT_TYPE} 類型的 SEO 內容...`);
   console.log(`📁 目標文件: ${indexPath}`);
   console.log(`🔑 API Key 已設置: ${ANTHROPIC_API_KEY ? '是' : '否'}`);
+  console.log(`📅 每日自動更新: ${AUTO_DAILY ? '是' : '否'}`);
+  
+  // 如果是每日自動更新，選擇關鍵字
+  let selectedKeywords = null;
+  if (AUTO_DAILY) {
+    const keywordSelection = selectKeywordsForToday();
+    selectedKeywords = keywordSelection.selected;
+    console.log(`📌 今日選中的關鍵字 (${keywordSelection.date}):`);
+    selectedKeywords.forEach((kw, i) => console.log(`   ${i + 1}. ${kw}`));
+  }
   
   try {
     // 生成內容
     console.log('📡 正在調用 Anthropic API...');
-    const aiContent = await generateSEOContent(CONTENT_TYPE);
+    const aiContent = await generateSEOContent(CONTENT_TYPE, selectedKeywords);
     console.log('✅ AI 內容生成成功');
     console.log(`📝 生成內容長度: ${aiContent.length} 字符`);
     
@@ -359,6 +369,9 @@ async function main() {
     
     if (updated) {
       console.log('✅ 內容更新完成');
+      if (selectedKeywords) {
+        console.log(`✅ 已使用關鍵字: ${selectedKeywords.join(', ')}`);
+      }
       process.exit(0);
     } else {
       console.error('❌ 內容更新失敗');
