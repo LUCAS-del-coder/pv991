@@ -433,6 +433,14 @@ const schemaOrg = {
         </div>
         
         </section>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="faq-section" aria-labelledby="faq-title">
+        <h2 id="faq-title" class="section-title">အမေးများသော မေးခွန်းများ (FAQ)</h2>
+        <div class="faq-container">
+          <!-- AI 自動生成的 FAQ 會添加在這裡 -->
+        </div>
+      </section>
     </main>
   </div>
 
@@ -856,6 +864,59 @@ const schemaOrg = {
     .platform-btn:nth-child(5) .platform-content { background: linear-gradient(135deg, #00ff88, #42ffaa); }
     .platform-btn:nth-child(6) .platform-content { background: linear-gradient(135deg, #8b00ff, #aa42ff); }
     .platform-btn:nth-child(7) .platform-content { background: linear-gradient(135deg, #ff0055, #ff4277); }
+
+    /* FAQ Section */
+    .faq-section {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 40px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 20px;
+    }
+
+    .faq-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .faq-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 25px;
+      border-left: 4px solid #ffd700;
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(5px);
+    }
+
+    .faq-question {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffd700;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-answer {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #e0e0e0;
+      margin-top: 10px;
+    }
+
+    .faq-date {
+      font-size: 12px;
+      color: #888;
+      margin-top: 10px;
+      font-style: italic;
+    }
 
     @media (max-width: 768px) {
       .sidebar { display: none; }

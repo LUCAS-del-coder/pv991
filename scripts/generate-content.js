@@ -96,8 +96,9 @@ if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   console.warn('請確認 API Key 是否正確設置');
 }
 
-// 讀取 index.astro 文件
+// 讀取文件路徑
 const indexPath = path.join(__dirname, '../src/pages/index.astro');
+const guidePath = path.join(__dirname, '../src/pages/guide.astro');
 
 // 檢查文件是否存在
 if (!fs.existsSync(indexPath)) {
@@ -105,7 +106,13 @@ if (!fs.existsSync(indexPath)) {
   process.exit(1);
 }
 
+if (!fs.existsSync(guidePath)) {
+  console.error(`❌ 錯誤: 找不到文件 ${guidePath}`);
+  process.exit(1);
+}
+
 let indexContent = fs.readFileSync(indexPath, 'utf-8');
+let guideContent = fs.readFileSync(guidePath, 'utf-8');
 
 /**
  * 使用 Anthropic API 生成 SEO 內容
@@ -150,7 +157,9 @@ async function generateSEOContent(contentType, keywords = null) {
   "gamesTitle": "遊戲標題（可以包含相關關鍵字）",
   "gamesParagraph": "遊戲段落內容（必須包含至少 1-2 個相關關鍵字，約 150-200 字）",
   "paymentTitle": "支付標題",
-  "paymentParagraph": "支付段落內容（約 150-200 字）"
+  "paymentParagraph": "支付段落內容（約 150-200 字）",
+  "faqQuestion": "一個與線上賭場相關的常見問題（使用緬甸語，約 20-30 字）",
+  "faqAnswer": "該問題的詳細答案（使用緬甸語，約 100-150 字，必須自然融入至少 1-2 個指定關鍵字）"
 }
 
 【最後檢查】返回 JSON 前，請確認所有 ${keywords ? keywords.length : 0} 個指定關鍵字都已包含在內容中。`,
@@ -240,7 +249,7 @@ async function generateSEOContent(contentType, keywords = null) {
 /**
  * 解析 AI 返回的內容並更新文件
  */
-function updateIndexFile(aiContent, contentType) {
+function updateFiles(aiContent, contentType) {
   try {
     console.log('📝 開始解析 AI 內容...');
     console.log('AI 返回內容長度:', aiContent.length);
@@ -305,7 +314,9 @@ function updateIndexFile(aiContent, contentType) {
           gamesTitle: extractJsonField(aiContent, 'gamesTitle') || extractSection(aiContent, 'gamesTitle', '遊戲標題', '遊戲'),
           gamesParagraph: extractJsonField(aiContent, 'gamesParagraph') || extractSection(aiContent, 'gamesParagraph', '遊戲段落', '遊戲內容'),
           paymentTitle: extractJsonField(aiContent, 'paymentTitle') || extractSection(aiContent, 'paymentTitle', '支付標題', '支付'),
-          paymentParagraph: extractJsonField(aiContent, 'paymentParagraph') || extractSection(aiContent, 'paymentParagraph', '支付段落', '支付內容')
+          paymentParagraph: extractJsonField(aiContent, 'paymentParagraph') || extractSection(aiContent, 'paymentParagraph', '支付段落', '支付內容'),
+          faqQuestion: extractJsonField(aiContent, 'faqQuestion') || null,
+          faqAnswer: extractJsonField(aiContent, 'faqAnswer') || null
         };
         
         // 如果至少有一些內容，就繼續
@@ -320,16 +331,15 @@ function updateIndexFile(aiContent, contentType) {
       content = { raw: aiContent };
     }
 
-    // 在現有 SEO 內容區域末尾新增內容（不替換現有內容）
-    const seoSectionEnd = indexContent.indexOf('</section>', indexContent.indexOf('seo-content'));
+    const timestamp = new Date().toISOString().split('T')[0];
+    let updated = false;
     
-    if (seoSectionEnd !== -1) {
-      let newContent = '';
-      const timestamp = new Date().toISOString().split('T')[0];
+    // 1. 更新 guide 分頁的 SEO 內容
+    if (contentType === 'all' && (content.mainTitle || content.mainParagraph)) {
+      const guideSeoSectionEnd = guideContent.indexOf('</section>', guideContent.indexOf('seo-content'));
       
-      if (contentType === 'all' && (content.mainTitle || content.mainParagraph)) {
-        // 生成結構化的新內容區塊（即使部分字段缺失也繼續）
-        newContent = `
+      if (guideSeoSectionEnd !== -1) {
+        const guideNewContent = `
         
         <!-- AI 自動生成內容 - ${timestamp} -->
         <div class="auto-generated-seo-content">
@@ -341,45 +351,68 @@ function updateIndexFile(aiContent, contentType) {
           ${content.paymentParagraph ? `<p>${escapeHtml(content.paymentParagraph)}</p>` : ''}
         </div>
         `;
-        console.log('✅ 已新增結構化 SEO 內容');
+        
+        guideContent = guideContent.slice(0, guideSeoSectionEnd) + guideNewContent + '\n      ' + guideContent.slice(guideSeoSectionEnd);
+        fs.writeFileSync(guidePath, guideContent, 'utf-8');
+        console.log('✅ SEO 內容已更新到 guide 分頁');
+        updated = true;
       } else {
-        // 對於其他類型，添加原始內容（確保不會插入 JSON）
+        console.warn('⚠️  無法找到 guide 分頁的 SEO 內容區域');
+      }
+    }
+    
+    // 2. 在主頁添加 FAQ（如果有）
+    if (contentType === 'all' && content.faqQuestion && content.faqAnswer) {
+      const faqContainerEnd = indexContent.indexOf('</div>', indexContent.indexOf('faq-container'));
+      
+      if (faqContainerEnd !== -1) {
+        const faqNewContent = `
+          <!-- AI 自動生成 FAQ - ${timestamp} -->
+          <div class="faq-item">
+            <div class="faq-question">${escapeHtml(content.faqQuestion)}</div>
+            <div class="faq-answer">${escapeHtml(content.faqAnswer)}</div>
+            <div class="faq-date">更新日期: ${timestamp}</div>
+          </div>
+        `;
+        
+        indexContent = indexContent.slice(0, faqContainerEnd) + faqNewContent + '\n        ' + indexContent.slice(faqContainerEnd);
+        fs.writeFileSync(indexPath, indexContent, 'utf-8');
+        console.log('✅ FAQ 已添加到主頁');
+        updated = true;
+      } else {
+        console.warn('⚠️  無法找到 FAQ 容器區域');
+      }
+    } else if (contentType !== 'all') {
+      // 對於其他類型，使用原始邏輯（保持向後兼容）
+      const seoSectionEnd = indexContent.indexOf('</section>', indexContent.indexOf('seo-content'));
+      
+      if (seoSectionEnd !== -1) {
         let safeContent = content.raw || aiContent;
-        // 如果內容看起來像 JSON，嘗試提取可讀文本
         if (safeContent.trim().startsWith('{') && safeContent.trim().endsWith('}')) {
-          console.warn('⚠️  檢測到 JSON 格式，嘗試提取可讀內容');
-          // 嘗試從 JSON 中提取所有字符串值
           const textMatches = safeContent.match(/"([^"]{20,})"/g);
           if (textMatches && textMatches.length > 0) {
             safeContent = textMatches.map(m => m.slice(1, -1)).join('\n\n');
-            console.log('✅ 從 JSON 中提取了文本內容');
           } else {
-            console.warn('⚠️  無法從 JSON 中提取內容，跳過插入');
             return false;
           }
         }
-        newContent = `
+        
+        const newContent = `
         
         <!-- AI 自動生成內容 - ${timestamp} -->
         <div class="auto-generated-seo-content">
           <p>${escapeHtml(safeContent)}</p>
         </div>
         `;
+        
+        indexContent = indexContent.slice(0, seoSectionEnd) + newContent + '\n        ' + indexContent.slice(seoSectionEnd);
+        fs.writeFileSync(indexPath, indexContent, 'utf-8');
         console.log('✅ 已新增 SEO 內容');
+        updated = true;
       }
-      
-      // 在 </section> 之前插入新內容
-      indexContent = indexContent.slice(0, seoSectionEnd) + newContent + '\n        ' + indexContent.slice(seoSectionEnd);
-    } else {
-      console.warn('⚠️  無法找到 SEO 內容區域，跳過更新');
-      return false;
     }
-
-    // 寫回文件
-    fs.writeFileSync(indexPath, indexContent, 'utf-8');
-    console.log('✅ SEO 內容已更新到文件');
     
-    return true;
+    return updated;
   } catch (error) {
     console.error('❌ 更新文件失敗:', error.message);
     console.error(error.stack);
@@ -514,7 +547,7 @@ async function main() {
     
     // 更新文件
     console.log('📝 正在更新文件...');
-    const updated = updateIndexFile(aiContent, CONTENT_TYPE);
+    const updated = updateFiles(aiContent, CONTENT_TYPE);
     
     if (updated) {
       console.log('✅ 內容更新完成');
