@@ -19,6 +19,19 @@ const SEED_KEYWORD = process.env.SEED_KEYWORD || 'casino';
 const COUNTRY_CODE = process.env.COUNTRY_CODE || 'mm';
 const AUTO_DAILY = process.env.AUTO_DAILY === 'true';
 
+// 驗證必要的環境變數
+if (!ANTHROPIC_API_KEY) {
+  console.error('❌ 錯誤: ANTHROPIC_API_KEY 未設置');
+  console.error('請在 GitHub Secrets 中設置 ANTHROPIC_API_KEY');
+  process.exit(1);
+}
+
+if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+  console.error('❌ 錯誤: ANTHROPIC_API_KEY 格式不正確');
+  console.error('API Key 應以 sk-ant- 開頭');
+  process.exit(1);
+}
+
 // 確保 blog 目錄存在
 const blogDir = path.join(__dirname, '../src/pages/blog');
 if (!fs.existsSync(blogDir)) {
@@ -30,7 +43,8 @@ if (!fs.existsSync(blogDir)) {
  */
 async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
   if (!AHREFS_API_KEY) {
-    throw new Error('Ahrefs API Key 未設置');
+    console.warn('⚠️  Ahrefs API Key 未設置，將使用備用關鍵字');
+    return null;
   }
 
   try {
@@ -58,7 +72,9 @@ async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
     });
 
     if (!response.ok) {
-      throw new Error(`Ahrefs API 失敗: ${response.status}`);
+      const errorText = await response.text();
+      console.warn(`⚠️  Ahrefs API 失敗: ${response.status} - ${errorText.substring(0, 200)}`);
+      return null; // 返回 null 而不是 throw，讓系統使用備用關鍵字
     }
 
     const data = await response.json();
@@ -67,12 +83,18 @@ async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
       .slice(0, limit)
       .map(item => item.keyword);
 
+    if (keywords.length === 0) {
+      console.warn('⚠️  Ahrefs 未返回關鍵字');
+      return null;
+    }
+
     console.log(`✅ 獲取了 ${keywords.length} 個關鍵字`);
     return keywords;
 
   } catch (error) {
-    console.error(`❌ Ahrefs 失敗: ${error.message}`);
-    throw error;
+    console.warn(`⚠️  Ahrefs API 錯誤: ${error.message}`);
+    console.warn(`📋 將使用備用關鍵字列表`);
+    return null; // 返回 null 而不是 throw，讓系統使用備用關鍵字
   }
 }
 
@@ -92,12 +114,18 @@ const FALLBACK_KEYWORDS = [
  */
 async function getKeywords() {
   if (!AHREFS_API_KEY) {
-    console.log('📋 使用備用關鍵字');
+    console.log('📋 使用備用關鍵字（Ahrefs API Key 未設置）');
     return FALLBACK_KEYWORDS;
   }
 
   try {
-    return await fetchEasyKeywordsFromAhrefs(SEED_KEYWORD, 30);
+    const keywords = await fetchEasyKeywordsFromAhrefs(SEED_KEYWORD, 30);
+    if (keywords && keywords.length > 0) {
+      return keywords;
+    } else {
+      console.warn('⚠️  Ahrefs 未返回關鍵字，使用備用關鍵字');
+      return FALLBACK_KEYWORDS;
+    }
   } catch (error) {
     console.warn('⚠️  使用備用關鍵字');
     return FALLBACK_KEYWORDS;
@@ -158,15 +186,27 @@ async function generateBlogPost(keyword, relatedKeywords) {
   ]
 }`;
 
+  // 使用最新的 Claude 模型列表
   const modelList = [
+    'claude-3-5-sonnet-20241022',
     'claude-3-5-sonnet-20240620',
     'claude-3-opus-20240229',
-    'claude-3-sonnet-20240229'
+    'claude-3-sonnet-20240229',
+    'claude-3-haiku-20240307'
   ];
 
   for (const model of modelList) {
     try {
       console.log(`📡 使用模型: ${model}`);
+      
+      if (!ANTHROPIC_API_KEY) {
+        throw new Error('ANTHROPIC_API_KEY 未設置');
+      }
+
+      // 驗證 API Key 格式
+      if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+        throw new Error('ANTHROPIC_API_KEY 格式不正確，應以 sk-ant- 開頭');
+      }
       
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -177,7 +217,7 @@ async function generateBlogPost(keyword, relatedKeywords) {
         },
         body: JSON.stringify({
           model: model,
-          max_tokens: 3000,
+          max_tokens: 4000,
           messages: [{
             role: 'user',
             content: prompt
@@ -187,7 +227,10 @@ async function generateBlogPost(keyword, relatedKeywords) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.warn(`⚠️  模型 ${model} 失敗: ${response.status}`);
+        console.warn(`⚠️  模型 ${model} 失敗: ${response.status} - ${errorText}`);
+        if (response.status === 401) {
+          throw new Error('API Key 無效或未授權');
+        }
         continue;
       }
 
