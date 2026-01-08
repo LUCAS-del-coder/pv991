@@ -1,0 +1,376 @@
+---
+import Layout from './Layout.astro';
+
+const { frontmatter } = Astro.props;
+const { title, description, keywords, pubDate } = frontmatter;
+---
+
+<Layout title={title} description={description}>
+  <article class="blog-post-container">
+    <div class="blog-post-header">
+      <div class="breadcrumb">
+        <a href="/">首頁</a>
+        <span class="separator">›</span>
+        <a href="/blog">部落格</a>
+        <span class="separator">›</span>
+        <span class="current">{title}</span>
+      </div>
+      
+      <h1 class="post-title">{title}</h1>
+      
+      <div class="post-meta">
+        <time datetime={pubDate} class="post-date">
+          {new Date(pubDate).toLocaleDateString('zh-TW', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </time>
+        {keywords && keywords.length > 0 && (
+          <div class="post-keywords">
+            {keywords.map(keyword => (
+              <span class="keyword-tag">{keyword}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div class="post-content">
+      <slot />
+    </div>
+
+    <div class="post-footer">
+      <div class="share-section">
+        <h3>分享這篇文章</h3>
+        <div class="share-buttons">
+          <button class="share-btn facebook" onclick="shareToFacebook()">
+            Facebook
+          </button>
+          <button class="share-btn twitter" onclick="shareToTwitter()">
+            Twitter
+          </button>
+          <button class="share-btn copy" onclick="copyLink()">
+            複製連結
+          </button>
+        </div>
+      </div>
+
+      <div class="back-to-blog">
+        <a href="/blog" class="btn-back">← 返回部落格</a>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .blog-post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* 麵包屑導航 */
+  .breadcrumb {
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .breadcrumb a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: #999;
+  }
+
+  .breadcrumb .current {
+    color: #333;
+  }
+
+  /* 文章標題區 */
+  .blog-post-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .post-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+    font-weight: 700;
+  }
+
+  .post-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .post-date {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .post-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .keyword-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* 文章內容樣式 */
+  .post-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .post-content :global(h2) {
+    font-size: 2rem;
+    margin: 2.5rem 0 1rem 0;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  .post-content :global(h3) {
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem 0;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  .post-content :global(h4) {
+    font-size: 1.25rem;
+    margin: 1.5rem 0 0.75rem 0;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  .post-content :global(p) {
+    margin: 1.25rem 0;
+    line-height: 1.8;
+  }
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin: 1.25rem 0;
+    padding-left: 2rem;
+  }
+
+  .post-content :global(li) {
+    margin: 0.75rem 0;
+    line-height: 1.8;
+  }
+
+  .post-content :global(blockquote) {
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid #667eea;
+    background: #f8f9fa;
+    font-style: italic;
+    color: #555;
+  }
+
+  .post-content :global(code) {
+    background: #f4f4f4;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+  }
+
+  .post-content :global(pre) {
+    background: #282c34;
+    color: #abb2bf;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .post-content :global(a) {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .post-content :global(a:hover) {
+    border-bottom-color: #007bff;
+  }
+
+  .post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 2rem 0;
+  }
+
+  /* FAQ 區塊樣式 */
+  .post-content :global(.faq-section) {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+  }
+
+  .post-content :global(.faq-section h2) {
+    margin-top: 0;
+  }
+
+  .post-content :global(.faq-item) {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .post-content :global(.faq-item h3) {
+    margin-top: 0;
+    color: #667eea;
+  }
+
+  /* 文章底部 */
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e0e0e0;
+  }
+
+  .share-section {
+    margin-bottom: 2rem;
+  }
+
+  .share-section h3 {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .share-btn.facebook {
+    background: #1877f2;
+    color: white;
+  }
+
+  .share-btn.twitter {
+    background: #1da1f2;
+    color: white;
+  }
+
+  .share-btn.copy {
+    background: #6c757d;
+    color: white;
+  }
+
+  .back-to-blog {
+    text-align: center;
+  }
+
+  .btn-back {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover {
+    background: #667eea;
+    color: white;
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .blog-post-container {
+      padding: 1rem;
+    }
+
+    .post-title {
+      font-size: 1.75rem;
+    }
+
+    .post-content {
+      font-size: 1rem;
+    }
+
+    .post-content :global(h2) {
+      font-size: 1.5rem;
+    }
+
+    .post-content :global(h3) {
+      font-size: 1.25rem;
+    }
+
+    .share-buttons {
+      flex-direction: column;
+    }
+
+    .share-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  function shareToFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+  }
+
+  function shareToTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(document.title);
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('連結已複製到剪貼簿！');
+    });
+  }
+</script>

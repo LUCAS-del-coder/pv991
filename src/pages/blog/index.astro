@@ -1,0 +1,379 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// 獲取所有部落格文章
+const allPosts = await Astro.glob('./*.astro');
+
+// 過濾並排序（排除 index.astro 本身）
+const posts = allPosts
+  .filter(post => post.frontmatter?.title && post.url !== Astro.url.pathname)
+  .sort((a, b) => {
+    const dateA = new Date(a.frontmatter.pubDate);
+    const dateB = new Date(b.frontmatter.pubDate);
+    return dateB - dateA; // 最新的在前
+  });
+
+// 統計資訊
+const totalPosts = posts.length;
+const allKeywords = [...new Set(posts.flatMap(p => p.frontmatter.keywords || []))];
+---
+
+<Layout title="部落格 - PV99 線上賭場指南" description="探索線上賭場的專業指南、技巧與最新資訊">
+  <main class="blog-index-container">
+    <div class="blog-header">
+      <h1>線上賭場指南與文章</h1>
+      <p class="blog-intro">
+        探索我們的專業指南，了解更多關於線上賭場、遊戲技巧與策略的知識
+      </p>
+      
+      <div class="blog-stats">
+        <div class="stat-item">
+          <span class="stat-number">{totalPosts}</span>
+          <span class="stat-label">篇文章</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{allKeywords.length}</span>
+          <span class="stat-label">個主題</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">每日</span>
+          <span class="stat-label">更新</span>
+        </div>
+      </div>
+    </div>
+
+    {posts.length === 0 ? (
+      <div class="no-posts">
+        <p>目前還沒有文章，敬請期待！</p>
+      </div>
+    ) : (
+      <div class="posts-grid">
+        {posts.map((post, index) => (
+          <article class="post-card" data-index={index}>
+            <div class="post-card-header">
+              <time datetime={post.frontmatter.pubDate} class="post-date">
+                {new Date(post.frontmatter.pubDate).toLocaleDateString('zh-TW', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </time>
+              {post.frontmatter.keywords && post.frontmatter.keywords.length > 0 && (
+                <div class="post-keywords-preview">
+                  <span class="keyword-tag-small">
+                    {post.frontmatter.keywords[0]}
+                  </span>
+                  {post.frontmatter.keywords.length > 1 && (
+                    <span class="keyword-count">+{post.frontmatter.keywords.length - 1}</span>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <h2 class="post-card-title">
+              <a href={post.url}>{post.frontmatter.title}</a>
+            </h2>
+            
+            <p class="post-card-description">
+              {post.frontmatter.description}
+            </p>
+            
+            <a href={post.url} class="read-more">
+              閱讀全文
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </article>
+        ))}
+      </div>
+    )}
+
+    <div class="blog-footer">
+      <a href="/" class="btn-home">← 返回首頁</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .blog-index-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+  }
+
+  /* 頁首區域 */
+  .blog-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .blog-header h1 {
+    font-size: 3rem;
+    margin: 0 0 1rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+  }
+
+  .blog-intro {
+    font-size: 1.25rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  /* 統計區域 */
+  .blog-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* 文章網格 */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  /* 文章卡片 */
+  .post-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+  }
+
+  .post-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .post-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .post-date {
+    font-size: 0.875rem;
+    color: #999;
+  }
+
+  .post-keywords-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .keyword-tag-small {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .keyword-count {
+    font-size: 0.75rem;
+    color: #999;
+    font-weight: 500;
+  }
+
+  .post-card-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .post-card-title a {
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .post-card-title a:hover {
+    color: #667eea;
+  }
+
+  .post-card-description {
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+    flex-grow: 1;
+    font-size: 0.95rem;
+  }
+
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: gap 0.2s;
+  }
+
+  .read-more:hover {
+    gap: 0.75rem;
+  }
+
+  .read-more svg {
+    transition: transform 0.2s;
+  }
+
+  .read-more:hover svg {
+    transform: translateX(4px);
+  }
+
+  /* 無文章狀態 */
+  .no-posts {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #999;
+  }
+
+  .no-posts p {
+    font-size: 1.25rem;
+  }
+
+  /* 頁尾 */
+  .blog-footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .btn-home {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-home:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .blog-index-container {
+      padding: 2rem 1rem;
+    }
+
+    .blog-header h1 {
+      font-size: 2rem;
+    }
+
+    .blog-intro {
+      font-size: 1rem;
+    }
+
+    .blog-stats {
+      gap: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+    }
+
+    .posts-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .post-card {
+      padding: 1.5rem;
+    }
+
+    .post-card-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* 動畫效果 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .post-card {
+    animation: fadeInUp 0.5s ease-out backwards;
+  }
+
+  .post-card:nth-child(1) { animation-delay: 0.1s; }
+  .post-card:nth-child(2) { animation-delay: 0.2s; }
+  .post-card:nth-child(3) { animation-delay: 0.3s; }
+  .post-card:nth-child(4) { animation-delay: 0.4s; }
+  .post-card:nth-child(5) { animation-delay: 0.5s; }
+  .post-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
