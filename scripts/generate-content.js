@@ -251,18 +251,33 @@ async function generateBlogPost(keyword, relatedKeywords) {
  * 清理和修復 JSON 字符串
  */
 function cleanJsonString(jsonString) {
-  // 移除控制字符（除了換行符和製表符，這些在 JSON 中可能是合法的）
-  let cleaned = jsonString
-    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // 移除控制字符
-    .trim();
-  
-  // 嘗試從文本中提取 JSON（如果 AI 返回的是包含 JSON 的文本）
-  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-  if (jsonMatch) {
-    cleaned = jsonMatch[0];
+  if (!jsonString || typeof jsonString !== 'string') {
+    throw new Error('無效的 JSON 字符串');
   }
   
-  return cleaned;
+  // 移除 BOM 和開頭/結尾的空白
+  let cleaned = jsonString.trim();
+  
+  // 移除零寬度字符
+  cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  
+  // 嘗試從文本中提取 JSON（如果 AI 返回的是包含 JSON 的文本）
+  // 使用非貪婪匹配，找到第一個完整的 JSON 對象
+  const jsonMatch = cleaned.match(/\{[\s\S]*?\}(?=\s*(?:\{|\n|$))/);
+  if (jsonMatch) {
+    cleaned = jsonMatch[0];
+  } else {
+    // 如果沒有找到匹配，嘗試找到最後一個完整的 JSON 對象
+    const lastMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (lastMatch) {
+      cleaned = lastMatch[0];
+    }
+  }
+  
+  // 移除 JSON 外的任何文本（markdown 代碼塊標記等）
+  cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+  
+  return cleaned.trim();
 }
 
 /**
@@ -276,25 +291,60 @@ function safeJsonParse(jsonString) {
     // 嘗試直接解析
     return JSON.parse(cleaned);
   } catch (error) {
-    // 如果失敗，嘗試修復常見問題
+    // 如果失敗，嘗試更激進的修復
     try {
-      let fixed = jsonString
-        .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // 移除所有控制字符
-        .replace(/\n/g, '\\n')  // 轉義換行符
-        .replace(/\r/g, '\\r')  // 轉義回車符
-        .replace(/\t/g, '\\t'); // 轉義製表符
+      let fixed = jsonString.trim();
       
-      // 再次嘗試提取 JSON
+      // 移除 markdown 代碼塊
+      fixed = fixed.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+      
+      // 提取 JSON 對象（使用更寬鬆的匹配）
       const jsonMatch = fixed.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+      if (!jsonMatch) {
+        throw new Error('未找到 JSON 對象');
       }
       
-      throw error;
+      fixed = jsonMatch[0];
+      
+      // 移除控制字符（但保留換行符，因為它們在 JSON 字符串值中是合法的）
+      // 只移除真正的控制字符，不是換行符
+      fixed = fixed.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+      
+      // 嘗試解析
+      const parsed = JSON.parse(fixed);
+      console.log('✅ 使用修復後的 JSON 解析成功');
+      return parsed;
+      
     } catch (secondError) {
-      console.error('❌ JSON 解析失敗:', secondError.message);
-      console.error('原始內容前 500 字符:', jsonString.substring(0, 500));
-      throw new Error(`JSON 解析失敗: ${secondError.message}`);
+      // 最後嘗試：手動修復常見的 JSON 問題
+      try {
+        let lastAttempt = jsonString.trim();
+        
+        // 提取 JSON
+        const jsonMatch = lastAttempt.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          lastAttempt = jsonMatch[0];
+          
+          // 修復未轉義的換行符（在字符串值中）
+          // 這是一個複雜的操作，我們先嘗試簡單的方法
+          lastAttempt = lastAttempt.replace(/([^\\])\n/g, '$1\\n');
+          lastAttempt = lastAttempt.replace(/([^\\])\r/g, '$1\\r');
+          lastAttempt = lastAttempt.replace(/([^\\])\t/g, '$1\\t');
+          
+          const parsed = JSON.parse(lastAttempt);
+          console.log('✅ 使用最後修復方法解析成功');
+          return parsed;
+        }
+      } catch (thirdError) {
+        // 所有方法都失敗了
+        console.error('❌ JSON 解析失敗 - 所有修復方法都失敗');
+        console.error('第一個錯誤:', error.message);
+        console.error('第二個錯誤:', secondError.message);
+        console.error('第三個錯誤:', thirdError.message);
+        console.error('原始內容前 1000 字符:');
+        console.error(jsonString.substring(0, 1000));
+        throw new Error(`JSON 解析失敗: ${thirdError.message}`);
+      }
     }
   }
 }
