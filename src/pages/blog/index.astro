@@ -2,10 +2,14 @@
 import Layout from '../../layouts/Layout.astro';
 
 // 獲取所有部落格文章
-const posts = await Astro.glob('./*.astro');
-const sortedPosts = posts
-  .filter(post => post.frontmatter.title) // 排除 index.astro 本身
-  .sort((a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pubDate));
+const allPosts = await Astro.glob('./*.astro') as any[];
+const sortedPosts = allPosts
+  .filter((post: any) => post.frontmatter?.title && post.url !== Astro.url.pathname) // 排除 index.astro 本身
+  .sort((a: any, b: any) => {
+    const dateA = new Date(a.frontmatter.pubDate).getTime();
+    const dateB = new Date(b.frontmatter.pubDate).getTime();
+    return dateB - dateA;
+  });
 ---
 
 <Layout title="部落格文章 - PV99 線上賭場指南">
@@ -14,7 +18,7 @@ const sortedPosts = posts
     <p class="intro">探索我們的專業指南，了解更多關於線上賭場的知識</p>
     
     <div class="posts-grid">
-      {sortedPosts.map(post => (
+      {sortedPosts.map((post: any) => (
         <article class="post-card">
           <h2>
             <a href={post.url}>{post.frontmatter.title}</a>
