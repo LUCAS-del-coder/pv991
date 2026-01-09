@@ -7,19 +7,27 @@ const allPosts = await Astro.glob('./*.astro') as any[];
 // 過濾並排序文章（排除 index.astro 本身）
 const sortedPosts = allPosts
   .filter((post: any) => {
-    // 排除 index.astro 本身（通過文件名或 URL）
-    const fileName = post.file?.split('/').pop() || '';
-    if (fileName === 'index.astro' || fileName.startsWith('index.')) {
+    // 排除 index.astro 本身（通過 URL 路徑）
+    const url = post.url || '';
+    if (url === '/blog/' || url === '/blog' || url.endsWith('/blog/index.html')) {
       return false;
     }
     
-    // 確保有 frontmatter 和 title
-    if (!post.frontmatter || !post.frontmatter.title) {
+    // 確保有 frontmatter
+    if (!post.frontmatter) {
+      console.warn('文章缺少 frontmatter:', url);
+      return false;
+    }
+    
+    // 確保有 title
+    if (!post.frontmatter.title) {
+      console.warn('文章缺少 title:', url);
       return false;
     }
     
     // 確保有 pubDate
     if (!post.frontmatter.pubDate) {
+      console.warn('文章缺少 pubDate:', url);
       return false;
     }
     
