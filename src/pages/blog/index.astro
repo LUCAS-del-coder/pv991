@@ -88,39 +88,48 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
           </div>
         </div>
         <div class="posts-grid">
-          {sortedPosts.map((post: any) => (
-            <article class="post-card">
-              <div class="post-card-header">
-                <time datetime={post.frontmatter.pubDate} class="post-date">
-                  {new Date(post.frontmatter.pubDate).toLocaleDateString('zh-TW', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
-                {post.frontmatter.keywords && post.frontmatter.keywords.length > 0 && (
-                  <div class="post-keywords-preview">
-                    <span class="keyword-tag-small">
-                      {post.frontmatter.keywords[0]}
-                    </span>
-                    {post.frontmatter.keywords.length > 1 && (
-                      <span class="keyword-count">+{post.frontmatter.keywords.length - 1}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-              <h2 class="post-card-title">
-                <a href={post.url}>{post.frontmatter.title}</a>
-              </h2>
-              <p class="post-description">{post.frontmatter.description}</p>
-              <a href={post.url} class="read-more">
-                閱讀全文
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-            </article>
-          ))}
+          {sortedPosts.length > 0 ? sortedPosts.map((post: any, index: number) => {
+            // 確保數據存在
+            if (!post || !post.frontmatter || !post.url) {
+              return null;
+            }
+            
+            return (
+              <article class="post-card" key={index}>
+                <div class="post-card-header">
+                  <time datetime={post.frontmatter.pubDate} class="post-date">
+                    {new Date(post.frontmatter.pubDate).toLocaleDateString('zh-TW', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </time>
+                  {post.frontmatter.keywords && Array.isArray(post.frontmatter.keywords) && post.frontmatter.keywords.length > 0 && (
+                    <div class="post-keywords-preview">
+                      <span class="keyword-tag-small">
+                        {String(post.frontmatter.keywords[0])}
+                      </span>
+                      {post.frontmatter.keywords.length > 1 && (
+                        <span class="keyword-count">+{post.frontmatter.keywords.length - 1}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <h2 class="post-card-title">
+                  <a href={post.url}>{String(post.frontmatter.title || '無標題')}</a>
+                </h2>
+                <p class="post-description">{String(post.frontmatter.description || '')}</p>
+                <a href={post.url} class="read-more">
+                  閱讀全文
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </article>
+            );
+          }) : (
+            <p>沒有文章可顯示</p>
+          )}
         </div>
       </>
     )}
@@ -139,6 +148,7 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    min-height: 200px;
   }
   
   .post-card {
@@ -146,6 +156,10 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
     border-radius: 8px;
     padding: 1.5rem;
     transition: transform 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+    display: block;
+    visibility: visible;
+    opacity: 1;
   }
   
   .post-card:hover {
