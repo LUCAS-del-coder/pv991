@@ -28,7 +28,7 @@ const { title, description, keywords, pubDate } = frontmatter;
         </time>
         {keywords && keywords.length > 0 && (
           <div class="post-keywords">
-            {keywords.map(keyword => (
+            {keywords.map((keyword: string) => (
               <span class="keyword-tag">{keyword}</span>
             ))}
           </div>

@@ -2,20 +2,20 @@
 import Layout from '../../layouts/Layout.astro';
 
 // 獲取所有部落格文章
-const allPosts = await Astro.glob('./*.astro');
+const allPosts = await Astro.glob('./*.astro') as any[];
 
 // 過濾並排序（排除 index.astro 本身）
 const posts = allPosts
-  .filter(post => post.frontmatter?.title && post.url !== Astro.url.pathname)
-  .sort((a, b) => {
-    const dateA = new Date(a.frontmatter.pubDate);
-    const dateB = new Date(b.frontmatter.pubDate);
+  .filter((post: any) => post.frontmatter?.title && post.url !== Astro.url.pathname)
+  .sort((a: any, b: any) => {
+    const dateA = new Date(a.frontmatter.pubDate).getTime();
+    const dateB = new Date(b.frontmatter.pubDate).getTime();
     return dateB - dateA; // 最新的在前
   });
 
 // 統計資訊
 const totalPosts = posts.length;
-const allKeywords = [...new Set(posts.flatMap(p => p.frontmatter.keywords || []))];
+const allKeywords = [...new Set(posts.flatMap((p: any) => p.frontmatter?.keywords || []))];
 ---
 
 <Layout title="部落格 - PV99 線上賭場指南" description="探索線上賭場的專業指南、技巧與最新資訊">

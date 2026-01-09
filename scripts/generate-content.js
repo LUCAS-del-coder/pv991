@@ -378,7 +378,7 @@ function createBlogPost(keyword, aiContent, date) {
 title: "${escapeQuotes(content.title)}"
 description: "${escapeQuotes(content.description)}"
 keywords: ["${keyword}", ${content.relatedQuestions?.map(q => `"${escapeQuotes(q)}"`).join(', ') || ''}]
-pubDate: ${date}
+pubDate: "${date}"
 layout: '../../layouts/BlogPost.astro'
 ---
 
