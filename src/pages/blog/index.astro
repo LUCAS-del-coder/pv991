@@ -59,6 +59,17 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
       <div class="no-posts">
         <p>目前還沒有文章，敬請期待！</p>
         <p class="debug-info">已讀取 {allPosts.length} 個文件，過濾後 {sortedPosts.length} 篇</p>
+        <details class="debug-details">
+          <summary>調試信息（點擊展開）</summary>
+          <pre>{JSON.stringify(allPosts.map((p: any) => ({
+            url: p.url,
+            file: p.file,
+            hasFrontmatter: !!p.frontmatter,
+            hasTitle: !!(p.frontmatter?.title || p.title),
+            hasPubDate: !!(p.frontmatter?.pubDate || p.pubDate),
+            keys: Object.keys(p)
+          })), null, 2)}</pre>
+        </details>
       </div>
     ) : (
       <>
@@ -176,6 +187,26 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
     font-size: 0.875rem;
     color: #999;
     margin-top: 1rem;
+  }
+  
+  .debug-details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0,0,0,0.1);
+    border-radius: 8px;
+    font-size: 0.75rem;
+  }
+  
+  .debug-details summary {
+    cursor: pointer;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+  
+  .debug-details pre {
+    overflow-x: auto;
+    font-size: 0.7rem;
+    color: #666;
   }
   
   .blog-stats {
