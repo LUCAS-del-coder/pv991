@@ -1,11 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// 使用 import.meta.glob 直接讀取 frontmatter
-const postModules = import.meta.glob('./*.astro', { 
-  import: 'frontmatter',
-  eager: true 
-}) as Record<string, { frontmatter: any }>;
+// 使用 import.meta.glob 導入所有文章模塊（eager 模式）
+const postModules = import.meta.glob('./*.astro', { eager: true }) as Record<string, any>;
 
 // 使用 Astro.glob 獲取 URL 和文件信息
 const allPosts = await Astro.glob('./*.astro') as any[];
@@ -22,19 +19,32 @@ const postsWithFrontmatter = allPosts
     }
     
     // 從 import.meta.glob 結果中獲取 frontmatter
+    // 注意：當使用 layout 時，frontmatter 可能在模塊的 frontmatter 屬性中
     const moduleKey = `./${fileName}`;
     const module = postModules[moduleKey];
     
-    if (!module || !module.frontmatter) {
+    if (!module) {
+      return null;
+    }
+    
+    // 嘗試多種方式訪問 frontmatter
+    let frontmatter = module.frontmatter || module.default?.frontmatter || (module.default && typeof module.default === 'object' ? module.default : null);
+    
+    // 如果還是沒有，嘗試直接訪問屬性
+    if (!frontmatter && (module.title || module.pubDate)) {
+      frontmatter = module;
+    }
+    
+    if (!frontmatter || !frontmatter.title || !frontmatter.pubDate) {
       return null;
     }
     
     return {
       ...post,
-      frontmatter: module.frontmatter
+      frontmatter
     };
   })
-  .filter((post: any) => post !== null && post.frontmatter?.title && post.frontmatter?.pubDate);
+  .filter((post: any) => post !== null);
 
 // 排序文章
 const sortedPosts = postsWithFrontmatter.sort((a: any, b: any) => {
