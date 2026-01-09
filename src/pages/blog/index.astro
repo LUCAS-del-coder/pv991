@@ -95,7 +95,7 @@ const allKeywords = [...new Set(sortedPosts.flatMap((p: any) => p.frontmatter?.k
             }
             
             return (
-              <article class="post-card" key={index}>
+              <article class="post-card">
                 <div class="post-card-header">
                   <time datetime={post.frontmatter.pubDate} class="post-date">
                     {new Date(post.frontmatter.pubDate).toLocaleDateString('zh-TW', {
