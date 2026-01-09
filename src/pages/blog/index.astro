@@ -1,37 +1,44 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// 獲取所有部落格文章
-const allPosts = await Astro.glob('./*.astro') as any[];
+// 獲取所有部落格文章（使用 Astro.glob，它會自動處理 layout）
+const allPosts = await Astro.glob('./*.astro', { 
+  import: 'frontmatter' 
+}) as any[];
 
 // 過濾並排序文章（排除 index.astro 本身）
 const sortedPosts = allPosts
   .filter((post: any) => {
-    // 排除 index.astro 本身（通過 URL 路徑）
-    const url = post.url || '';
-    if (url === '/blog/' || url === '/blog' || url.endsWith('/blog/index.html')) {
+    // 排除 index.astro 本身（通過文件名）
+    const filePath = post.file || '';
+    const fileName = filePath.split('/').pop() || '';
+    if (fileName === 'index.astro') {
       return false;
     }
     
-    // 確保有 frontmatter
-    if (!post.frontmatter) {
-      console.warn('文章缺少 frontmatter:', url);
-      return false;
-    }
+    // 確保有 frontmatter（使用 import: 'frontmatter' 時，frontmatter 在根級別）
+    const frontmatter = post.frontmatter || post;
     
     // 確保有 title
-    if (!post.frontmatter.title) {
-      console.warn('文章缺少 title:', url);
+    if (!frontmatter.title) {
       return false;
     }
     
     // 確保有 pubDate
-    if (!post.frontmatter.pubDate) {
-      console.warn('文章缺少 pubDate:', url);
+    if (!frontmatter.pubDate) {
       return false;
     }
     
     return true;
+  })
+  .map((post: any) => {
+    // 標準化 frontmatter 訪問
+    const frontmatter = post.frontmatter || post;
+    return {
+      ...post,
+      frontmatter,
+      url: post.url || `/blog/${post.file?.split('/').pop()?.replace('.astro', '') || ''}`
+    };
   })
   .sort((a: any, b: any) => {
     try {
