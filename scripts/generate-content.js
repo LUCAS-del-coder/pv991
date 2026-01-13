@@ -281,7 +281,7 @@ function cleanJsonString(jsonString) {
 }
 
 /**
- * 安全解析 JSON
+ * 安全解析 JSON - 改進版，更好地處理緬甸語和控制字符
  */
 function safeJsonParse(jsonString) {
   try {
@@ -316,34 +316,117 @@ function safeJsonParse(jsonString) {
       return parsed;
       
     } catch (secondError) {
-      // 最後嘗試：手動修復常見的 JSON 問題
+      // 最後嘗試：智能修復 JSON 字符串中的未轉義字符
       try {
         let lastAttempt = jsonString.trim();
         
+        // 移除 markdown 代碼塊
+        lastAttempt = lastAttempt.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+        
         // 提取 JSON
         const jsonMatch = lastAttempt.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          lastAttempt = jsonMatch[0];
-          
-          // 修復未轉義的換行符（在字符串值中）
-          // 這是一個複雜的操作，我們先嘗試簡單的方法
-          lastAttempt = lastAttempt.replace(/([^\\])\n/g, '$1\\n');
-          lastAttempt = lastAttempt.replace(/([^\\])\r/g, '$1\\r');
-          lastAttempt = lastAttempt.replace(/([^\\])\t/g, '$1\\t');
-          
-          const parsed = JSON.parse(lastAttempt);
-          console.log('✅ 使用最後修復方法解析成功');
-          return parsed;
+        if (!jsonMatch) {
+          throw new Error('未找到 JSON 對象');
         }
+        
+        lastAttempt = jsonMatch[0];
+        
+        // 智能修復：在字符串值中轉義特殊字符
+        // 使用正則表達式找到所有字符串值並修復它們
+        // 匹配 "key": "value" 中的 value 部分
+        lastAttempt = lastAttempt.replace(/("(?:[^"\\]|\\.)*")\s*:/g, (match, str) => {
+          // 在字符串值內部，轉義未轉義的換行符、回車符和製表符
+          // 但不要破壞已經轉義的字符
+          return str.replace(/(?<!\\)\n/g, '\\n')
+                    .replace(/(?<!\\)\r/g, '\\r')
+                    .replace(/(?<!\\)\t/g, '\\t')
+                    .replace(/(?<!\\)\f/g, '\\f')
+                    .replace(/(?<!\\)\b/g, '\\b')
+                    + ':';
+        });
+        
+        // 移除所有控制字符（除了已經轉義的）
+        lastAttempt = lastAttempt.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+        
+        const parsed = JSON.parse(lastAttempt);
+        console.log('✅ 使用智能修復方法解析成功');
+        return parsed;
       } catch (thirdError) {
-        // 所有方法都失敗了
-        console.error('❌ JSON 解析失敗 - 所有修復方法都失敗');
-        console.error('第一個錯誤:', error.message);
-        console.error('第二個錯誤:', secondError.message);
-        console.error('第三個錯誤:', thirdError.message);
-        console.error('原始內容前 1000 字符:');
-        console.error(jsonString.substring(0, 1000));
-        throw new Error(`JSON 解析失敗: ${thirdError.message}`);
+        // 最後嘗試：逐字符修復
+        try {
+          let finalAttempt = jsonString.trim();
+          
+          // 移除 markdown
+          finalAttempt = finalAttempt.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+          
+          // 提取 JSON
+          const jsonMatch = finalAttempt.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) {
+            throw new Error('未找到 JSON 對象');
+          }
+          
+          finalAttempt = jsonMatch[0];
+          
+          // 更激進的方法：在字符串值中轉義所有特殊字符
+          // 找到所有 "..." 字符串並修復
+          finalAttempt = finalAttempt.replace(/"([^"]*)"/g, (match, content) => {
+            // 轉義所有特殊字符
+            const escaped = content
+              .replace(/\\/g, '\\\\')  // 先轉義反斜杠
+              .replace(/\n/g, '\\n')
+              .replace(/\r/g, '\\r')
+              .replace(/\t/g, '\\t')
+              .replace(/\f/g, '\\f')
+              .replace(/\b/g, '\\b')
+              .replace(/"/g, '\\"');
+            return `"${escaped}"`;
+          });
+          
+          // 但這樣會破壞已經轉義的字符，所以我們需要更聰明的方法
+          // 重新嘗試，這次只修復未轉義的字符
+          finalAttempt = jsonMatch[0];
+          
+          // 使用更安全的方法：逐行處理，只在字符串值中修復
+          const lines = finalAttempt.split('\n');
+          let inString = false;
+          let fixedLines = lines.map(line => {
+            let result = '';
+            for (let i = 0; i < line.length; i++) {
+              const char = line[i];
+              if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
+                inString = !inString;
+                result += char;
+              } else if (inString && (char === '\n' || char === '\r' || char === '\t')) {
+                // 在字符串中，轉義這些字符
+                if (char === '\n') result += '\\n';
+                else if (char === '\r') result += '\\r';
+                else if (char === '\t') result += '\\t';
+              } else {
+                result += char;
+              }
+            }
+            return result;
+          });
+          
+          finalAttempt = fixedLines.join('\n');
+          
+          // 移除控制字符
+          finalAttempt = finalAttempt.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+          
+          const parsed = JSON.parse(finalAttempt);
+          console.log('✅ 使用逐字符修復方法解析成功');
+          return parsed;
+        } catch (fourthError) {
+          // 所有方法都失敗了
+          console.error('❌ JSON 解析失敗 - 所有修復方法都失敗');
+          console.error('第一個錯誤:', error.message);
+          console.error('第二個錯誤:', secondError.message);
+          console.error('第三個錯誤:', thirdError.message);
+          console.error('第四個錯誤:', fourthError.message);
+          console.error('原始內容前 1000 字符:');
+          console.error(jsonString.substring(0, 1000));
+          throw new Error(`JSON 解析失敗: ${fourthError.message}`);
+        }
       }
     }
   }
