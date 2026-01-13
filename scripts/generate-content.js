@@ -74,6 +74,16 @@ async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
     if (!response.ok) {
       const errorText = await response.text();
       console.warn(`⚠️  Ahrefs API 失敗: ${response.status} - ${errorText.substring(0, 200)}`);
+      
+      // 如果是 404，說明端點不存在，可能是 API 版本或端點路徑已更改
+      if (response.status === 404) {
+        console.warn(`⚠️  Ahrefs API 端點不存在，可能的原因：`);
+        console.warn(`   1. API 版本已更新，端點路徑已更改`);
+        console.warn(`   2. API Key 權限不足`);
+        console.warn(`   3. 請檢查 Ahrefs API 文檔確認正確的端點`);
+        console.warn(`📋 將使用擴展的備用關鍵字列表（${FALLBACK_KEYWORDS.length} 個關鍵字）`);
+      }
+      
       return null; // 返回 null 而不是 throw，讓系統使用備用關鍵字
     }
 
@@ -93,20 +103,44 @@ async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
 
   } catch (error) {
     console.warn(`⚠️  Ahrefs API 錯誤: ${error.message}`);
-    console.warn(`📋 將使用備用關鍵字列表`);
+    console.warn(`📋 將使用擴展的備用關鍵字列表（${FALLBACK_KEYWORDS.length} 個關鍵字）`);
     return null; // 返回 null 而不是 throw，讓系統使用備用關鍵字
   }
 }
 
 /**
- * 備用關鍵字列表
+ * 備用關鍵字列表（擴展版，包含更多關鍵字）
  */
 const FALLBACK_KEYWORDS = [
   'casino myanmar',
   'online casino',
   'slot games',
   'casino app',
-  'gambling myanmar'
+  'gambling myanmar',
+  'myanmar casino',
+  'casino games',
+  'online gambling',
+  'casino bonus',
+  'live casino',
+  'mobile casino',
+  'casino review',
+  'best casino',
+  'casino guide',
+  'casino tips',
+  'casino strategy',
+  'casino payment',
+  'casino withdrawal',
+  'casino safety',
+  'casino license',
+  'casino registration',
+  'casino login',
+  'casino download',
+  'casino software',
+  'casino provider',
+  'casino platform',
+  'casino website',
+  'casino mobile',
+  'casino desktop'
 ];
 
 /**
@@ -114,20 +148,24 @@ const FALLBACK_KEYWORDS = [
  */
 async function getKeywords() {
   if (!AHREFS_API_KEY) {
-    console.log('📋 使用備用關鍵字（Ahrefs API Key 未設置）');
+    console.log(`📋 使用備用關鍵字（Ahrefs API Key 未設置）`);
+    console.log(`📊 備用關鍵字數量: ${FALLBACK_KEYWORDS.length} 個`);
     return FALLBACK_KEYWORDS;
   }
 
   try {
     const keywords = await fetchEasyKeywordsFromAhrefs(SEED_KEYWORD, 30);
     if (keywords && keywords.length > 0) {
+      console.log(`✅ 成功從 Ahrefs 獲取 ${keywords.length} 個關鍵字`);
       return keywords;
     } else {
-      console.warn('⚠️  Ahrefs 未返回關鍵字，使用備用關鍵字');
+      console.warn(`⚠️  Ahrefs 未返回關鍵字，使用擴展的備用關鍵字列表`);
+      console.log(`📊 備用關鍵字數量: ${FALLBACK_KEYWORDS.length} 個`);
       return FALLBACK_KEYWORDS;
     }
   } catch (error) {
-    console.warn('⚠️  使用備用關鍵字');
+    console.warn(`⚠️  使用擴展的備用關鍵字列表`);
+    console.log(`📊 備用關鍵字數量: ${FALLBACK_KEYWORDS.length} 個`);
     return FALLBACK_KEYWORDS;
   }
 }
