@@ -245,7 +245,13 @@ const schemaOrg = {
         
         <div class="games-grid">
           {games.map(game => (
-            <article class="game-card">
+            <a 
+              href={platforms[0]?.url || '#'} 
+              class="game-card" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              aria-label={`${game.name} - ${game.provider} - 點擊進入遊戲`}
+            >
               <div class="game-image">
                 <!-- 遊戲圖片 -->
                 <img 
@@ -264,7 +270,7 @@ const schemaOrg = {
                 <h3 class="game-title">{game.name}</h3>
                 <p>{game.provider}</p>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </section>
@@ -966,8 +972,39 @@ const schemaOrg = {
       .sidebar { display: none; }
       .main-content { padding: 15px; }
       .banner-carousel { height: 300px; }
-      .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+      .games-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+        gap: 15px; 
+      }
       .seo-content { padding: 20px; }
+      .header { padding: 10px 0; }
+      .header-container { padding: 0 10px; }
+      .logo-img { height: 40px !important; }
+      .btn { padding: 8px 16px; font-size: 12px; }
+      .platforms-grid { 
+        grid-template-columns: 1fr; 
+        gap: 15px; 
+      }
+      .platform-btn { min-height: 150px; }
+      .section-title { font-size: 24px; }
+      .game-card { border-radius: 10px; }
+      .game-info { padding: 10px; }
+      .game-title { font-size: 13px; }
+      .footer { padding: 30px 15px 20px; }
+      .footer-links { flex-direction: column; gap: 15px; }
+    }
+
+    @media (max-width: 480px) {
+      .games-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px; 
+      }
+      .game-card { border-radius: 8px; }
+      .game-badge { font-size: 10px; padding: 3px 8px; }
+      .header-buttons { gap: 8px; }
+      .btn { padding: 8px 12px; font-size: 11px; }
+      .banner-carousel { height: 200px; }
+      .main-content { padding: 10px; }
     }
   </style>
 
