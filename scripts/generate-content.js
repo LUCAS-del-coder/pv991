@@ -109,38 +109,38 @@ async function fetchEasyKeywordsFromAhrefs(seedKeyword, limit = 30) {
 }
 
 /**
- * 備用關鍵字列表（擴展版，包含更多關鍵字）
+ * 備用關鍵字列表（用戶提供的30個關鍵字）
  */
 const FALLBACK_KEYWORDS = [
+  'shwe shan casino',
+  'lion boss casino',
+  'fishing casino - ငါးမုဆိုးတို့',
+  'shwe casino apk download old version',
+  'mwd777 myanmar online casino',
+  'shwe casino login',
+  'shwe casino game app',
+  'jdbyg best online casino in myanmar',
+  'shwe casino 2014',
+  'shwe casino game download ios',
+  'shwe casino 2014 apk',
+  'mighty fu casino - slots game downloadable content',
+  'shwe casino app link',
+  'gkk777 best online casino in myanmar',
+  'shwe casino game',
+  'www.shwe casino app',
+  'shwe casino game download',
+  'online casino myanmar',
+  'shwe casino download',
+  'golden7 casino',
+  'mighty fu casino - slots game',
   'casino myanmar',
-  'online casino',
-  'slot games',
-  'casino app',
-  'gambling myanmar',
-  'myanmar casino',
-  'casino games',
-  'online gambling',
-  'casino bonus',
-  'live casino',
-  'mobile casino',
-  'casino review',
-  'best casino',
-  'casino guide',
-  'casino tips',
-  'casino strategy',
-  'casino payment',
-  'casino withdrawal',
-  'casino safety',
-  'casino license',
-  'casino registration',
-  'casino login',
-  'casino download',
-  'casino software',
-  'casino provider',
-  'casino platform',
-  'casino website',
-  'casino mobile',
-  'casino desktop'
+  'mighty fu casino slots game',
+  'shwe casino app update',
+  'shwe casino apk download',
+  'shwe casino apk',
+  'fortune casino myanmar',
+  'shwe casino',
+  'shwe casino 2014 download'
 ];
 
 /**
