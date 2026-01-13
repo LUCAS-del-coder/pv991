@@ -722,12 +722,19 @@ const schemaOrg = {
       cursor: pointer;
       transition: all 0.3s;
       border: 2px solid transparent;
+      text-decoration: none;
+      display: block;
+      color: inherit;
     }
 
     .game-card:hover {
       transform: translateY(-8px);
       border-color: #ffd700;
       box-shadow: 0 12px 30px rgba(255, 215, 0, 0.3);
+    }
+
+    .game-card:active {
+      transform: translateY(-4px);
     }
 
     .game-image {
