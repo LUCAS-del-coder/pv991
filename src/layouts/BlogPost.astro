@@ -47,7 +47,10 @@ const articleSchema = {
 ---
 
 <Layout title={title} description={description}>
-  <article class="blog-post-container">
+  <!-- Article Schema for SEO -->
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(articleSchema)} />
+  
+  <article class="blog-post-container" itemscope itemtype="https://schema.org/Article">
     <div class="blog-post-header">
       <div class="breadcrumb">
         <a href="/">首頁</a>
