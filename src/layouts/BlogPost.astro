@@ -3,6 +3,47 @@ import Layout from './Layout.astro';
 
 const { frontmatter } = Astro.props;
 const { title, description, keywords, pubDate } = frontmatter;
+const siteUrl = "https://pv991.com";
+const currentUrl = `${siteUrl}${Astro.url.pathname}`;
+
+// Article Schema for blog posts
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description || title,
+  "image": `${siteUrl}/images/favicon.png`,
+  "datePublished": pubDate,
+  "dateModified": pubDate,
+  "author": {
+    "@type": "Organization",
+    "name": "PV99",
+    "url": siteUrl,
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/images/favicon.png`
+    }
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PV99",
+    "url": siteUrl,
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/images/favicon.png`,
+      "width": 512,
+      "height": 512
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": currentUrl
+  },
+  "inLanguage": "my-MM",
+  "keywords": keywords && keywords.length > 0 ? keywords.join(", ") : "online casino, myanmar casino, casino guide",
+  "articleSection": "Casino Guide",
+  "wordCount": "1000+"
+};
 ---
 
 <Layout title={title} description={description}>

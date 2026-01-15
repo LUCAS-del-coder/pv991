@@ -145,6 +145,41 @@ const schemaOrg = {
   }
 };
 
+// Organization Schema for SEO
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "PV99",
+  "url": siteUrl,
+  "logo": {
+    "@type": "ImageObject",
+    "url": `${siteUrl}/images/favicon.png`,
+    "width": 512,
+    "height": 512
+  },
+  "description": description,
+  "foundingDate": "2024",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Service",
+    "availableLanguage": ["my-MM", "my", "en"],
+    "areaServed": "MM"
+  },
+  "sameAs": [
+    siteUrl
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "MM",
+    "addressRegion": "Yangon"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Myanmar",
+    "alternateName": "မြန်မာ"
+  }
+};
+
 // LocalBusiness Schema for local SEO
 const localBusinessSchema = {
   "@context": "https://schema.org",
