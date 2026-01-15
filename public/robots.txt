@@ -1,12 +1,21 @@
 # robots.txt for PV99
+# 允許所有搜索引擎爬蟲訪問網站
+
 User-agent: *
 Allow: /
 
-# Sitemap
+# 禁止訪問的目錄（如果有的話）
+# Disallow: /admin/
+# Disallow: /private/
+
+# Sitemap 位置
 Sitemap: https://pv991.com/sitemap.xml
 
-# Allow all major search engines
+# 允許主要搜索引擎
 User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
 Allow: /
 
 User-agent: Bingbot
@@ -20,3 +29,9 @@ Allow: /
 
 User-agent: Baiduspider
 Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# 爬取延遲（可選，單位：秒）
+# Crawl-delay: 1
