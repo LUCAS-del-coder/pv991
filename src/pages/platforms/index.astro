@@ -1,0 +1,71 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const title = "ကာစီနို ပလက်ဖောင်းများ | PV991";
+const description = "PV991 မှာ မြန်မာသုံးစွဲသူများအတွက် ယုံကြည်စိတ်ချရသော အွန်လိုင်းကာစီနို ပလက်ဖောင်းများ (Yes8, Ygn9, Pya777, Mmk99, Kbz999, Mmk123, Mmk8, Shwe Casino 99, YZ09) ကို အသေးစိတ် ရှင်းပြထားသည်။";
+const siteUrl = "https://pv991.com";
+
+const platforms = [
+  { slug: "yes8", name: "Yes8", url: "https://www.yes8.io/m/home?affiliateCode=seom1802", img: "/images/platforms/yes8.jpg", desc: "Yes8 အွန်လိုင်းကာစီနို - လုံခြုံပြီး ယုံကြဲစိတ်ချရသော ဂိမ်းများ" },
+  { slug: "ygn9", name: "Ygn9", url: "https://www.ygn9.net/m/home?affiliateCode=seom1902", img: "/images/platforms/ygn9.jpg", desc: "Ygn9 - မြန်မာ့ထိပ်တန်း အွန်လိုင်းလောင်းကစားပလက်ဖောင်း" },
+  { slug: "pya777", name: "Pya777", url: "https://www.pya777.net/m/home?affiliateCode=seom2002", img: "/images/platforms/pya777.jpg", desc: "Pya777 ကာစီနို - အကောင်းဆုံး စလော့ဂိမ်းများ" },
+  { slug: "mmk99", name: "Mmk99", url: "https://www.mmk99.net/m/home?affiliateCode=seom2102", img: "/images/platforms/mmk99.jpg", desc: "Mmk99 - မြန်ဆန်သော ငွေသွင်း-ထုတ်မှု" },
+  { slug: "kbz999", name: "Kbz999", url: "https://www.kbz999.net/m/home?affiliateCode=seom2202", img: "/images/platforms/kbz999.jpg", desc: "Kbz999 အွန်လိုင်းကာစီနို - ဘောနပ်စများစွာ" },
+  { slug: "mmk123", name: "Mmk123", url: "https://www.mmk123.net/m/home?affiliateCode=seom2302", img: "/images/platforms/mmk123.jpg", desc: "Mmk123 - လူကြိုက်များသော ဂိမ်းများ" },
+  { slug: "mmk8", name: "Mmk8", url: "https://www.mmk8.net/m/home?affiliateCode=seom2401", img: "/images/platforms/mmk8.jpg", desc: "Mmk8 ကာစီနို - 24/7 ဝန်ဆောင်မှု" },
+  { slug: "shwe-casino-99", name: "Shwe Casino 99", url: "https://shwecasino99.com", img: "/images/platforms/shwe-casino-99.jpg", desc: "Shwe Casino 99 - အကောင်းဆုံး အွန်လိုင်းကာစီနို" },
+  { slug: "yz09", name: "YZ09", url: "https://yz09.com", img: "/images/platforms/yz09.jpg", desc: "YZ09 - ယုံကြည်စိတ်ချရသော ကာစီနို ပလက်ဖောင်း" }
+];
+---
+
+<Layout title={title} description={description}>
+  <main class="container">
+    <header class="hero">
+      <h1>ကာစီနို ပလက်ဖောင်းများ</h1>
+      <p>ပလက်ဖောင်းတိုင်းမှာ အားသာချက်၊ ငွေသွင်းထုတ်နည်း၊ bonus စည်းမျဉ်း စတာတွေ မတူပါ—အောက်မှာ အသေးစိတ်ဖတ်ပြီးမှ ဝင်ကစားပါ။</p>
+    </header>
+
+    <section class="grid" aria-label="platform list">
+      {platforms.map((p) => (
+        <article class="card">
+          <a class="card-link" href={`/platforms/${p.slug}`} aria-label={`${p.name} platform details`}>
+            <img src={p.img} alt={`${p.name} platform`} loading="lazy" />
+            <div class="card-body">
+              <h2>{p.name}</h2>
+              <p>{p.desc}</p>
+              <span class="more">အသေးစိတ်ကြည့်ရန် →</span>
+            </div>
+          </a>
+          <a class="cta" href={p.url} target="_blank" rel="noopener noreferrer">ယခုပဲ စတင်ကစားမည် ↗</a>
+        </article>
+      ))}
+    </section>
+  </main>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": title,
+    "description": description,
+    "url": `${siteUrl}/platforms`,
+    "inLanguage": "my"
+  })} />
+</Layout>
+
+<style>
+  .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem; }
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 2.2rem; margin: 0 0 0.75rem 0; }
+  .hero p { margin: 0; opacity: 0.9; line-height: 1.7; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+  .card { border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
+  .card-link { color: inherit; text-decoration: none; display: block; }
+  img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .card-body { padding: 1rem; }
+  .card-body h2 { font-size: 1.25rem; margin: 0 0 0.5rem 0; }
+  .card-body p { margin: 0 0 0.75rem 0; opacity: 0.9; line-height: 1.6; }
+  .more { font-weight: 700; }
+  .cta { display: block; padding: 0.9rem 1rem; text-align: center; text-decoration: none; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; font-weight: 700; }
+  .cta:hover { filter: brightness(1.08); }
+</style>
+

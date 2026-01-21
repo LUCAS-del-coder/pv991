@@ -1,0 +1,113 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const siteUrl = "https://pv991.com";
+
+const platform = {
+  slug: "yes8",
+  name: "Yes8",
+  url: "https://www.yes8.io/m/home?affiliateCode=seom1802",
+  description: "Yes8 အွန်လိုင်းကာစီနို - လုံခြုံပြီး ယုံကြဲစိတ်ချရသော ဂိမ်းများ",
+  highlights: [
+    "Slots / Live Casino / Table Games အများကြီး",
+    "KBZ Pay / Wave Money စသည့် MMK ငွေသွင်းထုတ် နည်းလမ်းများ (platform အလိုက် ကွာနိုင်)",
+    "Mobile-first UI — ဖုန်းနဲ့ကစားရ လွယ်ကူ",
+    "Bonus/Promotion ရှိနိုင် (Turnover စည်းမျဉ်းကို ကြိုဖတ်ပါ)"
+  ]
+};
+
+const title = `${platform.name} ကာစီနို လမ်းညွှန် | PV991`;
+const description = `${platform.name} ကို ဘယ်လို စတင်ကစားမလဲ—စာရင်းဖွင့်/OTP, KBZ/Wave ငွေသွင်းထုတ်, Bonus စည်းမျဉ်းဖတ်နည်း, လုံခြုံရေး checklist ကို Unicode မြန်မာစာဖြင့် ရှင်းပြထားသည်။`;
+---
+
+<Layout title={title} description={description}>
+  <main class="container">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">ပင်မ</a> <span>›</span>
+      <a href="/platforms">ပလက်ဖောင်းများ</a> <span>›</span>
+      <span>{platform.name}</span>
+    </nav>
+
+    <header class="hero">
+      <h1>{platform.name} အွန်လိုင်းကာစီနို (Myanmar Guide)</h1>
+      <p>{platform.description}</p>
+      <div class="cta-row">
+        <a class="cta primary" href={platform.url} target="_blank" rel="noopener noreferrer">Yes8 ကို ယခုပဲ စတင်ကစားမည် ↗</a>
+        <a class="cta secondary" href="/blog/2026-01-10-slot-games">Slot Games လမ်းညွှန် →</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>အမြန်ကြည့် (Highlights)</h2>
+      <ul>
+        {platform.highlights.map((h) => <li>{h}</li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Yes8 ကို ဘယ်လို စတင်မလဲ (အဆင့်လိုက်)</h2>
+      <ol>
+        <li>တရားဝင်လင့်ကို သေချာစစ်ပြီး ဝင်ရောက်ပါ (<code>https://</code>)</li>
+        <li>Register လုပ်ပြီး ဖုန်းနံပါတ်/စကားဝှက် ထည့်ပါ</li>
+        <li>OTP ကို အချိန်မီ ထည့်ပြီး Account ကို အတည်ပြုပါ</li>
+        <li>KBZ Pay / Wave Money / Bank Transfer ထဲက သင့်အဆင်ပြေရာနည်းနဲ့ Deposit လုပ်ပါ</li>
+        <li>Bonus Claim မလုပ်မီ Turnover/Allowed Games/Max Bet Rule ကို ကြိုဖတ်ပါ</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>လုံခြုံရေး Checklist (Scam ရှောင်ရန်)</h2>
+      <ul>
+        <li>OTP/Password ကို မည်သူ့ကိုမှ မမျှဝေပါနှင့်</li>
+        <li>Third‑party APK/Link မသုံးပါနှင့်</li>
+        <li>Deposit Slip/TxID ကို သိမ်းထားပါ (မတက်လျှင် Support အတွက်)</li>
+        <li>Public Wi‑Fi ပေါ်မှာ Login မဝင်ပါနှင့်</li>
+      </ul>
+    </section>
+
+    <section class="faq-section">
+      <h2>常見問題 (FAQ)</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>Yes8 မှာ KBZ/Wave Deposit မတက်ရင်?</h3>
+          <p>Slip Screenshot + TxID + လွှဲချိန် ကို LiveChat ထဲပေးပါ။ ဘဏ်စနစ်ကြောင့် 15-30 မိနစ် စောင့်ရနိုင်ပါတယ်။</p>
+        </div>
+        <div class="faq-item">
+          <h3>Bonus Claim လုပ်ပြီး Withdraw မရတာ ဘာကြောင့်?</h3>
+          <p>Turnover (Wagering x) မပြည့်ခြင်း၊ Allowed Games ကန့်သတ်ခြင်း၊ Max Bet Rule ချိုးဖောက်ခြင်းကြောင့် ဖြစ်နိုင်ပါတယ်။ Terms ကို ကြိုဖတ်ပါ။</p>
+        </div>
+        <div class="faq-item">
+          <h3>Yes8 link ကို ဘယ်လိုသေချာစစ်မလဲ?</h3>
+          <p>Domain ကို တိတိကျကျ စစ်ပြီး <code>https://</code> ပါမပါကြည့်ပါ။ Unknown link/redirect များကို မနှိပ်ပါနှင့်။</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${platform.name} Casino`,
+    "description": description,
+    "brand": { "@type": "Brand", "name": platform.name },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "MMK", "availability": "https://schema.org/InStock", "url": platform.url },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": `${siteUrl}/platforms/${platform.slug}` }
+  })} />
+</Layout>
+
+<style>
+  .container { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem; }
+  .breadcrumb { font-size: 0.95rem; opacity: 0.9; margin-bottom: 1.5rem; }
+  .breadcrumb a { color: inherit; }
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 2.1rem; margin: 0 0 0.75rem 0; }
+  .hero p { margin: 0 0 1rem 0; line-height: 1.7; opacity: 0.9; }
+  .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .cta { display: inline-block; padding: 0.85rem 1.1rem; border-radius: 12px; text-decoration: none; font-weight: 800; }
+  .primary { background: linear-gradient(135deg,#ff3b5c,#ff6b00); color: #fff; }
+  .secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; }
+  h2 { margin: 2rem 0 1rem 0; }
+  ul, ol { line-height: 1.9; }
+  code { background: rgba(255,255,255,0.08); padding: 0.2rem 0.4rem; border-radius: 6px; }
+</style>
+

@@ -1,0 +1,96 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const siteUrl = "https://pv991.com";
+const platform = {
+  slug: "ygn9",
+  name: "Ygn9",
+  url: "https://www.ygn9.net/m/home?affiliateCode=seom1902",
+  description: "Ygn9 - မြန်မာ့ထိပ်တန်း အွန်လိုင်းလောင်းကစားပလက်ဖောင်း",
+  highlights: [
+    "Slots / Live Casino / Sports စသည့် အမျိုးအစားများ",
+    "ဖုန်းပေါ်ကစားရ လွယ်ကူတဲ့ UI",
+    "Payment နည်းလမ်းများ (KBZ/Wave/Bank) ကို platform ထဲမှာ စစ်ရန်",
+    "Bonus/Promotion ရှိလျှင် Terms ကို ကြိုဖတ်ရန်"
+  ]
+};
+
+const title = `${platform.name} ကာစီနို လမ်းညွှန် | PV991`;
+const description = `${platform.name} ကို မြန်မာသုံးစွဲသူများအတွက် ဘယ်လို စတင်ကစားမလဲ—login/OTP, ငွေသွင်းထုတ်, bonus စည်းမျဉ်း, လုံခြုံရေး checklist ကို Unicode ဖြင့် ရှင်းပြထားသည်။`;
+---
+
+<Layout title={title} description={description}>
+  <main class="container">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">ပင်မ</a> <span>›</span>
+      <a href="/platforms">ပလက်ဖောင်းများ</a> <span>›</span>
+      <span>{platform.name}</span>
+    </nav>
+
+    <header class="hero">
+      <h1>{platform.name} အွန်လိုင်းကာစီနို (Myanmar Guide)</h1>
+      <p>{platform.description}</p>
+      <div class="cta-row">
+        <a class="cta primary" href={platform.url} target="_blank" rel="noopener noreferrer">{platform.name} ကို ယခုပဲ စတင်ကစားမည် ↗</a>
+        <a class="cta secondary" href="/blog/2026-01-09-online-casino">Online Casino လမ်းညွှန် →</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>အမြန်ကြည့် (Highlights)</h2>
+      <ul>
+        {platform.highlights.map((h) => <li>{h}</li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2>စတင်အသုံးပြုနည်း (အဆင့်လိုက်)</h2>
+      <ol>
+        <li>HTTPS ပါတဲ့ တရားဝင်လင့်ကို သေချာစစ်ပါ</li>
+        <li>Register/OTP လုပ်ပြီး Account အတည်ပြုပါ</li>
+        <li>Deposit (KBZ/Wave/Bank) ထဲက သင့်အဆင်ပြေရာနည်းကို ရွေးပါ</li>
+        <li>Bonus Claim မလုပ်မီ Turnover/Allowed Games/Max Bet Rule ကို ကြိုဖတ်ပါ</li>
+      </ol>
+    </section>
+
+    <section class="faq-section">
+      <h2>常見問題 (FAQ)</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>Deposit မတက်ရင် ဘာလုပ်ရမလဲ?</h3>
+          <p>Slip Screenshot/TxID/လွှဲချိန်ကို သိမ်းပြီး LiveChat ထဲ တင်ပါ။ 15-30 မိနစ် စောင့်ရနိုင်ပါတယ်။</p>
+        </div>
+        <div class="faq-item">
+          <h3>Bonus ကြောင့် Withdraw မရတာ?</h3>
+          <p>Turnover မပြည့်ခြင်း သို့ Allowed Games ကန့်သတ်ချက်ကြောင့် ဖြစ်နိုင်ပါတယ်။ Terms ကို ကြိုဖတ်ပါ။</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${platform.name} Casino`,
+    "description": description,
+    "brand": { "@type": "Brand", "name": platform.name },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "MMK", "availability": "https://schema.org/InStock", "url": platform.url },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": `${siteUrl}/platforms/${platform.slug}` }
+  })} />
+</Layout>
+
+<style>
+  .container { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem; }
+  .breadcrumb { font-size: 0.95rem; opacity: 0.9; margin-bottom: 1.5rem; }
+  .breadcrumb a { color: inherit; }
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 2.1rem; margin: 0 0 0.75rem 0; }
+  .hero p { margin: 0 0 1rem 0; line-height: 1.7; opacity: 0.9; }
+  .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .cta { display: inline-block; padding: 0.85rem 1.1rem; border-radius: 12px; text-decoration: none; font-weight: 800; }
+  .primary { background: linear-gradient(135deg,#ff3b5c,#ff6b00); color: #fff; }
+  .secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; }
+  h2 { margin: 2rem 0 1rem 0; }
+  ul, ol { line-height: 1.9; }
+</style>
+

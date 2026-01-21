@@ -1,0 +1,47 @@
+# robots.txt for PV991
+# 允許所有搜索引擎爬蟲訪問網站
+
+User-agent: *
+Allow: /
+
+# 避免重複內容/參數頁面被索引
+Disallow: /api/
+Disallow: /admin/
+Disallow: /search
+Disallow: /search?
+Disallow: /*?affiliateCode=
+Disallow: /*?utm_
+Disallow: /*?ref=
+Disallow: /*?source=
+
+# 禁止訪問的目錄（如果有的話）
+# Disallow: /admin/
+# Disallow: /private/
+
+# Sitemap 位置
+Sitemap: https://pv991.com/sitemap.xml
+
+# 允許主要搜索引擎
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# 爬取延遲（可選，單位：秒）
+Crawl-delay: 1

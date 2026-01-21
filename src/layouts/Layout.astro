@@ -1,0 +1,130 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  keywords?: string;
+}
+
+const { title, description = "PV991 - မြန်မာ့အကောင်းဆုံး အွန်လိုင်းကာစီနို", keywords = "PV991, အွန်လိုင်းကာစီနို, online casino myanmar" } = Astro.props;
+const siteUrl = "https://pv991.com";
+const ogImage = "/images/og-image.jpg";
+---
+
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- 地理位置定位 Meta 標籤 - 針對緬甸市場 -->
+  <meta name="geo.region" content="MM" />
+  <meta name="geo.placename" content="Myanmar" />
+  <meta name="geo.position" content="21.9162;95.9560" />
+  <meta name="ICBM" content="21.9162, 95.9560" />
+  
+  <!-- Favicon (瀏覽器標籤頁圖標) - 使用相對路徑 -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/site-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/site-icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/site-icon.png">
+  <link rel="icon" type="image/png" href="/site-icon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/site-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/site-icon.png">
+  <meta name="msapplication-TileImage" content="/site-icon.png">
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-724BTJFFGZ"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-724BTJFFGZ');
+
+    // PV991 - basic engagement events (no PII)
+    window.addEventListener('click', (e) => {
+      const a = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (!a) return;
+      const href = a.getAttribute('href') || '';
+      const isExternal = /^https?:\/\//i.test(href);
+      const location = a.closest('header') ? 'header' : (a.closest('aside') ? 'sidebar' : 'content');
+      if (href.startsWith('/platforms/')) {
+        gtag('event', 'platform_internal_click', { platform_path: href, location });
+      } else if (isExternal) {
+        gtag('event', 'outbound_click', { link_url: href, location });
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      const scrollTop = doc.scrollTop || document.body.scrollTop || 0;
+      const scrollHeight = (doc.scrollHeight || document.body.scrollHeight || 1) - doc.clientHeight;
+      const depth = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
+      if (!window.__pv991_scroll) window.__pv991_scroll = {};
+      [25, 50, 75, 90].forEach((p) => {
+        if (depth >= p && !window.__pv991_scroll[p]) {
+          window.__pv991_scroll[p] = true;
+          gtag('event', 'scroll_depth', { percent: p });
+        }
+      });
+    }, { passive: true });
+  </script>
+  
+  <!-- Primary Meta Tags -->
+  <title>{title}</title>
+  <meta name="title" content={title}>
+  <meta name="description" content={description}>
+  {keywords && <meta name="keywords" content={keywords}>}
+  <meta name="author" content="PV991">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="Myanmar">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href={`${siteUrl}${Astro.url.pathname}`}>
+  
+  <!-- Hreflang 標籤 - 指定緬甸為目標市場 -->
+  <link rel="alternate" hreflang="my-MM" href={`${siteUrl}${Astro.url.pathname}`} />
+  <link rel="alternate" hreflang="my" href={`${siteUrl}${Astro.url.pathname}`} />
+  <link rel="alternate" hreflang="x-default" href={`${siteUrl}${Astro.url.pathname}`} />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={`${siteUrl}${Astro.url.pathname}`}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={`${siteUrl}${ogImage}`}>
+  <meta property="og:site_name" content="PV991">
+  <meta property="og:locale" content="my_MM">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content={`${siteUrl}${Astro.url.pathname}`}>
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={`${siteUrl}${ogImage}`}>
+  
+  <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <style is:global>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Noto Sans Myanmar', 'Roboto', sans-serif;
+      background: #1a1d2e;
+      color: #fff;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <slot />
+</body>
+</html>
+
