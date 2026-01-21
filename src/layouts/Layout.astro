@@ -13,25 +13,7 @@ const ogImage = "/images/og-image.jpg";
 <!DOCTYPE html>
 <html lang="my">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- 地理位置定位 Meta 標籤 - 針對緬甸市場 -->
-  <meta name="geo.region" content="MM" />
-  <meta name="geo.placename" content="Myanmar" />
-  <meta name="geo.position" content="21.9162;95.9560" />
-  <meta name="ICBM" content="21.9162, 95.9560" />
-  
-  <!-- Favicon (瀏覽器標籤頁圖標) - 使用相對路徑 -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/site-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/site-icon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/site-icon.png">
-  <link rel="icon" type="image/png" href="/site-icon.png">
-  <link rel="shortcut icon" type="image/x-icon" href="/site-icon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/site-icon.png">
-  <meta name="msapplication-TileImage" content="/site-icon.png">
-  
-  <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) - place immediately after <head> -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17892448612"></script>
   <script is:inline>
     window.dataLayer = window.dataLayer || [];
@@ -68,6 +50,24 @@ const ogImage = "/images/og-image.jpg";
       });
     }, { passive: true });
   </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- 地理位置定位 Meta 標籤 - 針對緬甸市場 -->
+  <meta name="geo.region" content="MM" />
+  <meta name="geo.placename" content="Myanmar" />
+  <meta name="geo.position" content="21.9162;95.9560" />
+  <meta name="ICBM" content="21.9162, 95.9560" />
+  
+  <!-- Favicon (瀏覽器標籤頁圖標) - 使用相對路徑 -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/site-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/site-icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/site-icon.png">
+  <link rel="icon" type="image/png" href="/site-icon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/site-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/site-icon.png">
+  <meta name="msapplication-TileImage" content="/site-icon.png">
   
   <!-- Primary Meta Tags -->
   <title>{title}</title>
